@@ -24,9 +24,10 @@ import cgi
 import datetime
 import re
 
+# remove try/catch for debugging..
 # debug {{ #
 #import cgitb
-#cgitb.enable(display=0, logdir="/tmp/data-logger-upload.log")
+#cgitb.enable(display=0, logdir="/tmp/")
 # debug }} #
 
 def store(storage_path, do_archive):
