@@ -51,7 +51,7 @@ def store(storage_path, do_archive):
             of.write(file_content)
         if do_archive:
             with open(data_archive, "w") as of:
-            of.write(file_content)
+                of.write(file_content)
         response += ' <Ack status="OK"></Ack>\n' + '</Response>\n'
         print response
     except:
