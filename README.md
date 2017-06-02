@@ -7,4 +7,5 @@ network to a server using HTTPS-POST.
 ## Installation
 
 * Copy the python script to a directory of a CGI-webserver.
+* Rename the script if needed..
 * Configure the scripts storage_path to point to a directory writeable to the webserver- or CGI-user.
