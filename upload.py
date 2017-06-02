@@ -26,7 +26,7 @@ import re
 
 # debug {{ #
 #import cgitb
-#cgitb.enable(display=0, logdir="/path/logfile")
+#cgitb.enable(display=0, logdir="/tmp/data-logger-upload.log")
 # debug }} #
 
 def store(storage_path, do_archive):
@@ -35,7 +35,7 @@ def store(storage_path, do_archive):
     data_file = storage_path + "sensor-data-latest.xml"
     data_archive = storage_path + "sensor-data-" + timestamp + ".xml"
 
-    repl = 'Content-Type: application/xml;charset=iso-8859-1\n\n' + \
+    response = 'Content-Type: application/xml;charset=iso-8859-1\n\n' + \
             '<?xml version="1.0" encoding="iso-8859-1"?>\n' + \
             '<Response responseTime="' + timestamp + '" hascmds="false">\n'
 
@@ -51,11 +51,11 @@ def store(storage_path, do_archive):
         if do_archive:
             with open(data_archive, "w") as of:
             of.write(file_content)
-        repl += ' <Ack status="OK"></Ack>\n' + '</Response>\n'
-        print repl
+        response += ' <Ack status="OK"></Ack>\n' + '</Response>\n'
+        print response
     except:
-        repl += ' <Ack status="FAIL">Error</Ack>\n' + '</Response>\n'
-        print repl
+        response += ' <Ack status="FAIL">Error</Ack>\n' + '</Response>\n'
+        print response
 
 if __name__ == "__main__":
 
