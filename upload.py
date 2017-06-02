@@ -60,5 +60,5 @@ def store(storage_path, do_archive):
 
 if __name__ == "__main__":
 
-    store("/tmp", False)
+    store("/tmp/", False)
 
