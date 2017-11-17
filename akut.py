@@ -27,7 +27,7 @@ for i in range(5, ws_in.max_row):
     measurement["lat"] = ws_in.cell(row=i, column=3).value
     measurement["long"] = ws_in.cell(row=i, column=4).value
     measurement["author"] = ws_in.cell(row=i, column=5).value
-    measurement["timestamp"] = ws_in.cell(row=i, column=4).value
+    measurement["timestamp"] = ws_in.cell(row=i, column=6).value
 
     for k in range(8, ws_in.max_column): 
 
