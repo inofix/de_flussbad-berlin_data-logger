@@ -96,18 +96,16 @@ def recalculate_akut(in_file_name):
                     measurement["value"] = val
 
                     measurements.append(measurement)
-                    print("      <p>Import OK: " + str(vid) + " " +\
-                            measurement["name"] + " = " +\
-                             str(val) + ' ' + measurement["unit"] + '</p>\n')
+                    print("      <p class='detail'>Import OK: " + str(vid) +\
+                            " " + measurement["name"] + " = " +\
+                            str(val) + ' ' + measurement["unit"] + '</p>\n')
 
         print('      <p>Import done.</p>')
         return measurements
 
-    except ValueError:
-        print('      <p>Some value could not be imported, please control your input file...</p>\n')
     except Exception:
-        print('      <p>Import failed: the import file does not match the implementation</p>')
-
+        # Quick but Dirty: for now just pretend it to be an input problem...
+        raise ValueError('Some value could not be imported, please control your input file...')
 ### debug ###
 #    except Exception:
 #        import traceback
@@ -152,7 +150,8 @@ def store(storage_path, file_prefix='data', do_archive=False):
         print('      <p>Looks all good. Thank you!</p>\n')
         print('      <p>This is the link to the <a href="/data-store/' +\
                 file_prefix + '-latest.json">result</a></p>\n')
-    except:
+    except Exception as e:
+        print('      <p>' + e.message + '</p>\n')
         print('      <p>Upload failed. Please try again!</p>\n')
     print('      <p>This is the link (back) to the ')
     print('<a href="/data-store/upload.html">upload form</a></p>\n')
@@ -161,5 +160,5 @@ def store(storage_path, file_prefix='data', do_archive=False):
 
 if __name__ == "__main__":
 
-    store("/tmp/")
+    store("/srv/www/data/")
 
