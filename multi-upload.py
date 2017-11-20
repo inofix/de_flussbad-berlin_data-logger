@@ -51,14 +51,12 @@ def recalculate_akut(in_file_name):
         # make anything configurable..
         for i in range(6, ws_in.max_row):
 
-            measurement = {}
-
-            measurement["analyse"] = str(ws_in.cell(row=i, column=1).value)
-            measurement["location"] = str(ws_in.cell(row=i, column=2).value)
+            analyse = str(ws_in.cell(row=i, column=1).value)
+            location = str(ws_in.cell(row=i, column=2).value)
             # geolocation lat/long are floats
-            measurement["lat"] = float(ws_in.cell(row=i, column=3).value)
-            measurement["long"] = float(ws_in.cell(row=i, column=4).value)
-            measurement["author"] = str(ws_in.cell(row=i, column=5).value)
+            geo_lat = float(ws_in.cell(row=i, column=3).value)
+            geo_long = float(ws_in.cell(row=i, column=4).value)
+            author = str(ws_in.cell(row=i, column=5).value)
             # get a timestamp as a string
             t = ws_in.cell(row=i, column=6).value
             if t:
@@ -73,28 +71,36 @@ def recalculate_akut(in_file_name):
                 try:
                     # is it a timestamp?
                     t_ = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%S")
-                    measurement["timestamp"] = t_.isoformat()
+                    timestamp = t_.isoformat()
                 except ValueError:
                     # give it another try..
                     try:
                         t_ = datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
-                        measurement["timestamp"] = t_.isoformat()
+                        timestamp = t_.isoformat()
                     except ValueError:
                         # last chance, else really fail..
                         t_ = datetime.datetime.strptime(t, "%m/%d/%Y %H:%M:%S")
-                        measurement["timestamp"] = t_.isoformat()
+                        timestamp = t_.isoformat()
 
             for j in range(8, ws_in.max_column):
 
                 vid = ws_in.cell(row=2, column=j).value
                 val = ws_in.cell(row=i, column=j).value
                 if vid:
-                    measurement["id"] = str(vid)
-                    measurement["method"] = str(ws_in.cell(row=3, column=j).value)
-                    measurement["name"] = ws_in.cell(row=4, column=j).value.encode('utf-8')
-                    measurement["unit"] = ws_in.cell(row=5, column=j).value.encode('utf-8')
-                    measurement["value"] = val
 
+                    measurement = {
+                        "id": str(vid),
+                        "method": str(ws_in.cell(row=3, column=j).value),
+                        "name": ws_in.cell(row=4, column=j).value.encode('utf-8'),
+                        "unit": ws_in.cell(row=5, column=j).value.encode('utf-8'),
+                        "value": val,
+                        "timestamp": timestamp,
+                        "author": author,
+                        "analyse": analyse,
+                        "location": location,
+                        "lat": geo_lat,
+                        "long": geo_long,
+                    }
                     measurements.append(measurement)
                     print("      <p class='detail'>Import OK: " + str(vid) +\
                             " " + measurement["name"] + " = " +\
@@ -160,5 +166,5 @@ def store(storage_path, file_prefix='data', do_archive=False):
 
 if __name__ == "__main__":
 
-    store("/srv/www/data/")
+    store("/tmp/", "test", True)
 
