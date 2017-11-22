@@ -87,17 +87,18 @@ def recalculate_akut(in_file_name):
                 vid = ws_in.cell(row=2, column=j).value
                 val = ws_in.cell(row=i, column=j).value
                 if vid:
-
+                    name = ws_in.cell(row=4, column=j).value.encode('utf-8')
                     measurement = {
                         "id": str(vid),
                         "method": str(ws_in.cell(row=3, column=j).value),
-                        "name": ws_in.cell(row=4, column=j).value.encode('utf-8'),
+                        "name": name,
+                        "location": location,
+                        "name_location": name + " " + location,
                         "unit": ws_in.cell(row=5, column=j).value.encode('utf-8'),
                         "value": val,
                         "timestamp": timestamp,
                         "author": author,
                         "analyse": analyse,
-                        "location": location,
                         "lat": geo_lat,
                         "long": geo_long,
                     }
@@ -126,6 +127,9 @@ def store(storage_path, file_prefix='data', do_archive=False):
 
     print('Content-Type: text/html\n\n')
     print('<html>\n')
+    print('  <head>\n')
+    print('    <meta charset="utf-8" />\n')
+    print('  </head>\n')
     print('  <body>\n')
     print('    <h3>Current Upload ' + timestamp + '</h3>\n')
 
