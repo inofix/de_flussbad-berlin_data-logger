@@ -24,6 +24,8 @@ import cgi
 import datetime
 import re
 
+from xml.etree import ElementTree
+
 # remove try/catch for debugging..
 # debug {{ #
 #import cgitb
@@ -47,6 +49,8 @@ def store(storage_path, do_archive):
         file_content = file_content.strip('"')
         file_content = re.sub("\\\\r", "", file_content)
         file_content = re.sub("\\\\n", "\n", file_content)
+        # just test whether we got some xml
+        r = ElementTree.fromstring(file_content)
         with open(data_file, "w") as of:
             of.write(file_content)
         if do_archive:
