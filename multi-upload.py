@@ -122,47 +122,74 @@ def recalculate_akut(in_file_name):
 
 def store(storage_path, file_prefix='data', do_archive=False):
     timestamp = datetime.datetime.utcnow().replace(microsecond=0).isoformat()
-
     file_prefix += "-"
+    print_h('Current Upload ' + timestamp)
 
+    try:
+        data = cgi.FieldStorage()
+        if data.has_key('filetype') and data.has_key('file'):
+            file_prefix += data['filetype'].value
+            if data['filetype'].value == 'inofix':
+                j = json.loads(data['file'].value)
+                data_file_name = storage_path + '/' + file_prefix +\
+                        '-latest.json'
+                with open(data_file_name, 'w') as of:
+                    of.write(json.dumps(j))
+                print_p('File saved.')
+                if do_archive:
+                    data_file_name = storage_path + '/' + file_prefix +\
+                        '-' + timestamp + '.json'
+                    with open(data_file_name, 'w') as of:
+                        of.write(json.dumps(j))
+                    print_p('Archive copy saved.')
+
+            elif data['filetype'].value == 'akut':
+                print_p('File received.')
+                tmp_file_name = storage_path + '/tmp.xlsx'
+                with open(tmp_file_name, 'w') as of:
+                    of.write(data['file'].value)
+                print_p('File temporarily stored.')
+                m = recalculate_akut(tmp_file_name)
+                print_p('File converted.')
+                data_file_name = storage_path + '/' + file_prefix +\
+                        '-latest.json'
+                with open(data_file_name, 'w') as of:
+                    of.write(json.dumps(m))
+                print_p('File saved.')
+                if do_archive:
+                    data_file_name = storage_path + '/' + file_prefix +\
+                        '-' + timestamp + '.json'
+                    with open(data_file_name, 'w') as of:
+                        of.write(json.dumps(m))
+                    print_p('Archive copy saved.')
+
+            else:
+                print_p('Unsupported upload format.')
+                return
+            print_p('Looks all good. Thank you!')
+            print_p('This is the link to the <a href="/data-store/' +\
+                    file_prefix + '-latest.json">result</a>')
+        else:
+            print_p('No upload file provided..')
+    except Exception as e:
+        print_p(e.message)
+        print_p('Upload failed. Please try again!')
+
+def print_h(text):
+    print('    <h3>' + text + '</h3>\n')
+
+def print_p(text):
+    print('    <p>' + text + '</p>\n')
+
+def open_html():
     print('Content-Type: text/html\n\n')
     print('<html>\n')
     print('  <head>\n')
     print('    <meta charset="utf-8" />\n')
     print('  </head>\n')
     print('  <body>\n')
-    print('    <h3>Current Upload ' + timestamp + '</h3>\n')
 
-    try:
-        data = cgi.FieldStorage()
-        if data.has_key('filetype') and data.has_key('file'):
-            file_prefix += data['filetype'].value
-            if data['filetype'].value == 'akut':
-                print('      <p>File received.</p>\n')
-                tmp_file_name = storage_path + '/tmp.xlsx'
-                with open(tmp_file_name, 'w') as of:
-                    of.write(data['file'].value)
-                print('      <p>File temporarily stored.</p>\n')
-                m = recalculate_akut(tmp_file_name)
-                print('      <p>File converted.</p>\n')
-                data_file_name = storage_path + '/' + file_prefix +\
-                        '-latest.json'
-                with open(data_file_name, 'w') as of:
-                    of.write(json.dumps(m))
-                print('      <p>File saved.</p>\n')
-                if do_archive:
-                    data_file_name = storage_path + '/' + file_prefix +\
-                        '-' + timestamp + '.json'
-                    with open(data_file_name, 'w') as of:
-                        of.write(json.dumps(m))
-                    print('      <p>Archive copy saved.</p>\n')
-
-        print('      <p>Looks all good. Thank you!</p>\n')
-        print('      <p>This is the link to the <a href="/data-store/' +\
-                file_prefix + '-latest.json">result</a></p>\n')
-    except Exception as e:
-        print('      <p>' + e.message + '</p>\n')
-        print('      <p>Upload failed. Please try again!</p>\n')
+def close_html():
     print('      <p>This is the link (back) to the ')
     print('<a href="/data-store/upload.html">upload form</a></p>\n')
     print('    </body>\n')
@@ -170,5 +197,8 @@ def store(storage_path, file_prefix='data', do_archive=False):
 
 if __name__ == "__main__":
 
+    open_html()
+
     store("/tmp/", "test", True)
 
+    close_html()
